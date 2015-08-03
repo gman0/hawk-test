@@ -1,0 +1,126 @@
+This is a CLI testbed for libhawk found at:
+https://github.com/gman0/libhawk.git
+
+
+Dependencies
+------------
+libhawk
+
+
+Building
+--------
+A C++1y compliant compiler is needed (g++ >=4.9.1 or clang >=3.5 will suffice)
+and CMake.
+
+cd into the directory with the source files:
+$ cd hawk-test
+
+create a directory for building and cd into it
+$ mkdir build
+$ cd build
+
+point cmake to the directory with CMakeLists.txt config file:
+$ cmake ..
+
+build hawk-test
+$ make
+
+An executable named hawk-test should be now created in your build directory.
+
+
+Running hawk-test
+-----------------
+$ ./hawk-test
+ ('/': bin) Added T1:'/', set to active
+cd 
+
+The part between braces tells you your current location (/) and the
+file/directory you're currently pointing to (bin). Then it tells you
+that a new tab with ID 1 has been created in /.
+
+Some facilities in hawk-test are addressable trough an ID which is a positive
+non-zero integer.
+
+On the second line you're presented with a command line (cd) to which you're
+feeding commands and/or arguemnts. A command can be either persistent or
+non-persistent and its syntax is as follows:
+  Persistent command:
+   command-trigger
+   Upon hitting [ENTER], the command line will start with prompt of the
+   particular command and any input that is not recognized as a command-trigger
+   will be fed as an argument to the current peristent command.
+  Non-persistent command:
+   command-name:arguments,separated,by,commas
+   Hitting [ENTER] will execute the command with the supplied arguments and
+   then it will return back to the persistent command.
+   Some commands may accept multiple arguments while others won't.
+
+A persistent command can act as a non-persistent one but not the other way around,
+example:
+ command-trigger for the change-directory (cd) command is '.' (without the quotes).
+ By simply entering '.' you'll move to the change-directory command
+ and 'cd ' prompt will show up.
+
+ If you don't want to change the current command but still want to e.g. change
+ the current location you can type: '.:/usr/local/bin'.
+
+Typing '\' exits the program.
+
+
+List of commands
+----------------
+abbreviations:
+ PE: persistent
+ NP: non-persistent
+
+ SA: single-argument
+ MA: one or multiple-argument
+ OA: one or no-argument
+ NA: no-argument
+
+Location control:
+  . PE,SA: changes current location, accepts both relative and absolute paths
+  , PE,SA: moves the cursor to the file/directory with the supplied filename
+  + NP,NA: lists the contents of the current directory
+ ++ NP,NA: prints directory contents in a "column-view"
+
+Cursor control:
+  ~ NP,OA: moves the cursor up by one or specified number of files
+  ` NP,OA: moves the cursor down by one or specified number of files
+ ~~ NP,NA: moves the cursor to the beginning of the directory
+ `` NP,NA: moves the cursor to the end of the directory
+
+Tab control:
+ |> NP,OA: creates a new tab in current or specified location (relative or
+           absolute path)
+ |< NP,OA: removes current tab or the one specified by an ID
+  | NP,SA: switches to a tab with the specified ID
+ || NP,NA: lists open tabs
+
+I/O control:
+   > PE,MA: in single-argument mode copies file/directory selected by the
+            cursor to the specified destination. In multiple-argument mode
+            the syntax is as follows: 'destination/directory:source1,source2...'
+            Settings: ':show' shows the current settings, ':deref' toggles
+            dereferencing symlinks, ':update' toggles updating of relative
+            symlinks.
+  >> PE,MA: moves files/directories - the same as for the copy-command
+            but without the ':deref' setting.
+ >>> NP,MA: removes files/directories - supplied paths may by both relative
+            and absolute
+   < NP,SA: pauses an I/O task with supplied ID
+  << NP,SA: resumes an I/O task with supplied ID
+ <<< NP,SA: cancels an I/O task with supplied ID
+
+The command-triggers can be easily customized in main.cpp
+
+
+Links
+-----
+libhawk git: https://github.com/gman0/libhawk.git
+hawk-test git: https://github.com/gman0/hawk-test.git
+
+
+Contact
+-------
+my email: <gman@codefreax.org>
