@@ -34,16 +34,11 @@ void print_status(unsigned id, const IO_task::Item& i, IO_task::Status st)
 	using St = IO_task::Status;
 	switch (st)
 	{
-	case St::failed:
-		cout << "failed"; break;
-	case St::finished:
-		cout << "finished"; break;
-	case St::paused:
-		cout << "paused"; break;
-	case St::pending:
-		cout << "pending"; break;
-	case St::preparing:
-		cout << "preparing"; break;
+	case St::failed: cout << "failed"; break;
+	case St::finished: cout << "finished"; break;
+	case St::paused: cout << "paused"; break;
+	case St::pending: cout << "pending"; break;
+	case St::preparing: cout << "preparing"; break;
 	}
 
 	cout << " ]]" << endl;
@@ -119,7 +114,7 @@ void file_monitor(IO_task* parent, const File_progress& fp)
 	using namespace chrono;
 	using namespace chrono_literals;
 
-	IO_base* b = reinterpret_cast<IO_base*>(parent);
+	IO_base* b = dynamic_cast<IO_base*>(parent);
 	cout << "[ IO" << b->id << ": ETA ";
 	print_time(fp.eta_end);
 
