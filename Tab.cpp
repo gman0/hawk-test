@@ -20,6 +20,7 @@
 #include <exception>
 #include <iostream>
 #include <hawk/Filesystem.h>
+#include <hawk/handlers/List_dir_hash.h>
 #include "Tab.h"
 #include "Dir_view.h"
 
@@ -28,7 +29,7 @@ using namespace std;
 
 namespace {
 
-void exception_handle(unsigned tab_id, std::exception_ptr eptr) noexcept
+void exception_handler(unsigned tab_id, std::exception_ptr eptr) noexcept
 {
 	try { rethrow_exception(eptr); }
 	catch (const Filesystem_error& e) {
@@ -53,15 +54,29 @@ unsigned Tab::add_view_group(const Path& p, const View_types& vt,
 							 Cursor_cache& cc)
 {
 	auto eh = [id = m_id](std::exception_ptr eptr) {
-		exception_handle(id, eptr);
+		exception_handler(id, eptr);
 	};
 
-	View_types::Handler active_ld = [&]{ return new Dir_view_active {cc}; };
+	View_types::Handler active_ld = [&](View_group& parent){
+		return new Dir_view_active {cc, parent};
+	};
+	auto ld = vt.get_handler(hash_list_dir());
 
-	using namespace chrono_literals;
-	return m_vgroups.insert(
-		std::make_unique<View_group>(
-				p, 3, vt, cc, eh, active_ld, nullptr, 50ms));
+	// Create a view group.
+	auto vg = make_unique<View_group>(
+				vt, cc, eh, chrono::milliseconds {50});
+
+	// Add a couple of non-active views.
+	for (int i = 0; i < 2; i++)
+		vg->add_view(ld);
+
+	// Add an active view.
+	vg->add_view(active_ld);
+
+	// Set the path. At this point, the view group is ready to use.
+	vg->set_path(p);
+
+	return m_vgroups.insert(std::move(vg));
 }
 
 bool Tab::remove_view_group(unsigned id)
