@@ -42,7 +42,7 @@ Some facilities in hawk-test are addressable trough an ID which is a positive
 non-zero integer.
 
 On the second line you're presented with a command line (cd) to which you're
-feeding commands and/or arguemnts. A command can be either persistent or
+feeding commands and/or arguments. A command can be either persistent or
 non-persistent and its syntax is as follows:
   Persistent command:
    command-trigger
@@ -80,6 +80,7 @@ abbreviations:
 
 Location control:
   . PE,SA: changes current location, accepts both relative and absolute paths
+           entering an asterisk '*' follows the cursor
   , PE,SA: moves the cursor to the file/directory with the supplied filename
   + NP,NA: lists the contents of the current directory
  ++ NP,NA: prints directory contents in a "column-view"
