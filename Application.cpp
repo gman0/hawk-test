@@ -141,5 +141,7 @@ IO_manager& Application::get_io_manager()
 
 void Application::register_handlers()
 {
-	m_vt.register_type(hash_list_dir(), [&]{ return new Dir_view {m_cc}; });
+	m_vt.register_type(hash_list_dir(), [&](View_group& parent){
+		return new Dir_view {m_cc, parent};
+	});
 }

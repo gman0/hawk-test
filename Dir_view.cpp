@@ -98,8 +98,8 @@ bool no_dir_ptr(const Dir_ptr& ptr)
 
 } // unnamed-namespace
 
-Dir_view::Dir_view(Cursor_cache& cc)
-	: List_dir{cc}, m_lk{m_mtx, std::defer_lock}
+Dir_view::Dir_view(Cursor_cache& cc, View_group& parent)
+	: List_dir{cc, parent}, m_lk{m_mtx, std::defer_lock}
 {}
 
 void Dir_view::print_full() const

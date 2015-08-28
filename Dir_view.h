@@ -33,7 +33,7 @@ protected:
 	mutable std::unique_lock<std::mutex> m_lk;
 
 public:
-	Dir_view(hawk::Cursor_cache& cc);
+	Dir_view(hawk::Cursor_cache& cc, hawk::View_group& parent);
 
 	void print_full() const;
 	std::vector<std::string> get_column_list() const;
