@@ -51,7 +51,7 @@ public:
 	hawk::Path get_cursor_path() const;
 
 private:
-	virtual void ready() noexcept;
+	virtual void on_set_cursor() noexcept;
 };
 
 class Dir_preview : public Dir_view

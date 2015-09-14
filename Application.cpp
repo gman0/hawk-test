@@ -22,6 +22,7 @@
 #include <hawk/User_data.h>
 #include <hawk/Filesystem.h>
 #include <hawk/handlers/List_dir_hash.h>
+#include <hawk/dir-cache/Dir_cache.h>
 #include "utils.h"
 #include "Application.h"
 #include "Entry_info.h"
@@ -32,7 +33,7 @@ using namespace std;
 
 namespace {
 
-void on_fs_change(Tab_manager::Container& tabs, const vector<size_t>& hvec)
+void on_fs_change(Tab_manager::Container& tabs, const Path& p)
 {
 	for (auto& t_p : tabs)
 	{
@@ -46,10 +47,7 @@ void on_fs_change(Tab_manager::Container& tabs, const vector<size_t>& hvec)
 
 				auto view_it = find_if(views.begin(), views.end(),
 					[&](const View_group::List_dir_ptr& v) {
-						size_t h = v->get_path().hash();
-						auto h_it = find(hvec.begin(), hvec.end(), h);
-
-						return h_it != hvec.end();
+						return v->get_path() == p;
 					});
 
 				return view_it != views.end();
@@ -107,14 +105,18 @@ Application::Application(const Path& init_path) : m_tm{m_vt}
 {
 	register_handlers();
 
+	init_dir_cache(1000);
+
 	set_on_sort_change([&]{ on_sort_change(m_tm.get_container()); });
 	set_populate_user_data(&populate);
 	set_sort_predicate(&sort_predicate);
 
 	using namespace std::chrono_literals;
-	start_filesystem_watchdog(50ms, [&](const vector<size_t>& hvec){
-		on_fs_change(m_tm.get_container(), hvec);
-	});
+
+	start_filesystem_watchdog(50ms, WD_NATIVE | WD_POLL,
+		[&](const Path& p){
+			on_fs_change(m_tm.get_container(), p);
+		});
 
 	m_tm.add(init_path, m_cc);
 }

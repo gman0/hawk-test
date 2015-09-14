@@ -158,6 +158,7 @@ vector<string> Dir_view::get_column_list() const
 
 void Dir_view::ready() noexcept
 {
+	acquire_cursor();
 	m_lk.unlock();
 }
 
@@ -174,7 +175,7 @@ Path Dir_view_active::get_cursor_path() const
 	return (lk.try_lock() && m_dir_ptr) ? m_cursor->path : Path {};
 }
 
-void Dir_view_active::ready() noexcept
+void Dir_view_active::on_set_cursor() noexcept
 {
 	cout << " (" << m_path << ": ";
 
@@ -184,6 +185,4 @@ void Dir_view_active::ready() noexcept
 		cout << m_cursor->path.c_str();
 
 	cout << ") " << flush;
-
-	Dir_view::ready();
 }
